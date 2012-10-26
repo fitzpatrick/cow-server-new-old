@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.drools.KnowledgeBase;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.process.ProcessContext;
 import org.jbpm.process.workitem.wsht.AsyncMinaHTWorkItemHandler;
 import org.jbpm.process.workitem.wsht.MinaHTWorkItemHandler;
 import org.jbpm.process.workitem.wsht.WSHumanTaskHandler;
@@ -39,13 +40,15 @@ public class ProcessInstanceServiceImpl extends AbstractCowServiceImpl implement
          */
 
         Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> content = new HashMap<String, Object>();
         if (instance.getVariables() != null) {
             for (Variable variable : instance.getVariables().getVariables()) {
-                vars.put(variable.getName(), variable.getValue());
+                content.put(variable.getName(), variable.getValue());
             }
         }
         // COW-65 save history for all variables
         // org.jbpm.api.ProcessInstance pi = executionService.startProcessInstanceByKey(instance.getProcessDefinitionKey(), vars);
+        vars.put("testvar", "winning");
         org.drools.runtime.process.ProcessInstance pi = kSession.startProcess(instance.getProcessDefinitionKey(), vars);
         instance.setId(pi.getProcessId());
         /*
@@ -70,6 +73,7 @@ public class ProcessInstanceServiceImpl extends AbstractCowServiceImpl implement
     @Override
     public ProcessInstance getProcessInstance(String processInstanceId) {
         org.drools.runtime.process.ProcessInstance pi = kSession.getProcessInstance(Long.valueOf(processInstanceId));
+        Map<String,Object> var = pi.getProcess().getMetaData();
         return (pi == null) ? null : converter.convert(pi, ProcessInstance.class);
     }
 

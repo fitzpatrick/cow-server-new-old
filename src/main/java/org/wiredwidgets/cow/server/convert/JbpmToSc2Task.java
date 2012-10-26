@@ -1,58 +1,41 @@
-/**
- * Approved for Public Release: 10-4800. Distribution Unlimited.
- * Copyright 2011 The MITRE Corporation,
- * Licensed under the Apache License,
- * Version 2.0 (the "License");
- *
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied.
- *
- * See the License for the specific language governing permissions and limitations under the License.
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
 package org.wiredwidgets.cow.server.convert;
 
-import java.util.Map;
-import java.util.Set;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.wiredwidgets.cow.server.api.service.Task;
-import org.wiredwidgets.cow.server.api.service.Variable;
-import org.wiredwidgets.cow.server.api.service.Variables;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jbpm.task.query.TaskSummary;
 import org.springframework.core.convert.converter.Converter;
+import org.wiredwidgets.cow.server.api.service.Task;
 
 /**
  *
- * @author JKRANES
+ * @author FITZPATRICK
  */
-public class JbpmToSc2Task extends AbstractConverter implements Converter<org.jbpm.task.query.TaskSummary, Task> {
-
-    // NOTE: Autowiring does not work here!
-    // @Autowired
-    org.wiredwidgets.cow.server.service.TaskService cowTaskService = null;
+public class JbpmToSc2Task extends AbstractConverter implements Converter<org.jbpm.task.Task, Task>{
 
     @Override
-    public Task convert(org.jbpm.task.query.TaskSummary source) {
-
+    public Task convert(org.jbpm.task.Task source) {
+        
         Task target = new Task();
 
-        target.setDescription(source.getDescription());
-
-        if (source.getActualOwner() != null){
-            target.setAssignee(source.getActualOwner().getId());
+        if (source.getDescriptions() != null){
+            target.setDescription(source.getDescriptions().get(0).getText());
         }
 
+        if (source.getTaskData().getActualOwner() != null){
+            target.setAssignee(source.getTaskData().getActualOwner().getId());
+        }
+
+        if (source.getTaskData().getCreatedOn() != null) {
+            target.setCreateTime(this.getConverter().convert(source.getTaskData().getCreatedOn(), XMLGregorianCalendar.class));
+        }
+
+        if (source.getTaskData().getExpirationTime() != null) {
+            target.setDueDate(this.getConverter().convert(source.getTaskData().getExpirationTime(), XMLGregorianCalendar.class));
+        }
         
-        if (source.getCreatedOn() != null) {
-            target.setCreateTime(this.getConverter().convert(source.getCreatedOn(), XMLGregorianCalendar.class));
-        }
-
-        if (source.getExpirationTime() != null) {
-            target.setDueDate(this.getConverter().convert(source.getExpirationTime(), XMLGregorianCalendar.class));
-        }
         target.setId(String.valueOf(source.getId()));
         target.setPriority(new Integer(source.getPriority()));
 
@@ -118,21 +101,5 @@ public class JbpmToSc2Task extends AbstractConverter implements Converter<org.jb
 
         return target;
     }
-
-    private void addVariable(Task task, Variable var) {
-        if (task.getVariables() == null) {
-            task.setVariables(new Variables());
-        }
-        task.getVariables().getVariables().add(var);
-    }
-    
-    /*
-     * Fix for COW-132
-     * Tasks in parallel structures may cause sub-executions  with IDs in the form key.number.number.number
-     * In this case we only want to look at the top level process execution.  
-     */
-    private String getTopLevelExecutionId(String executionId) {
-        String[] parts = executionId.split("\\.");
-        return parts[0] + "." + parts[1];
-    }
+  
 }

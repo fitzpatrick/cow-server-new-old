@@ -84,14 +84,13 @@ public class TasksController {
     @RequestMapping("/active/{id}")
     @ResponseBody
     public Task getTask(@PathVariable("id") String id, HttpServletResponse response) {
-        /*Task task = taskService.getTask(id);
+        Task task = taskService.getTask(id);
         if (task == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return null;
         } else {
             return task;
-        }*/
-        throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 
     /**
@@ -112,7 +111,9 @@ public class TasksController {
     @ResponseBody
     public void completeTask(@PathVariable("id") String id, @RequestParam(value = "outcome", required = false) String outcome, @RequestParam(value = "var", required = false) String variables, HttpServletResponse response, HttpServletRequest request) {
         // verify existence
-        /*if (taskService.getTask(id) == null) {
+        Task task = taskService.getTask(id);
+        
+        if (task == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
         } else {
             Map<String, String> varMap = new HashMap<String, String>();
@@ -129,15 +130,14 @@ public class TasksController {
                 }
             }
             log.debug("Completing task: id=" + id + " outcome=" + outcome);
-            log.debug("Vars: " + varMap);
+            //log.debug("Vars: " + varMap);
 
-            taskService.completeTask(id, outcome, varMap);
+            taskService.completeTask(id, task.getAssignee(), outcome, varMap);
             response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204
             
-            Task t = taskService.getTask(id);
-            amqpNotifier.amqpTaskPublish(t, "process", "TaskCompleted", id);
-        }*/
-        throw new UnsupportedOperationException("Not supported yet.");
+            //Task t = taskService.getTask(id);
+            //amqpNotifier.amqpTaskPublish(t, "process", "TaskCompleted", id);
+        }
     }
 
     /**
@@ -153,7 +153,7 @@ public class TasksController {
     @RequestMapping(value = "/active/{id}", method = RequestMethod.POST, params = "assignee")
     public void takeTask(@PathVariable("id") String id, @RequestParam("assignee") String assignee, HttpServletResponse response) {
         // a request with a blank query string, e.g. ?assignee=, results in an empty string value
-        /*if (assignee.equals("")) {
+        if (assignee.equals("")) {
             taskService.removeTaskAssignment(id);
         }
         else {
@@ -161,9 +161,8 @@ public class TasksController {
         }
         response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204
         
-        Task t = taskService.getTask(id);
-        amqpNotifier.amqpTaskPublish(t, "process", "TaskTaken", id);*/
-        throw new UnsupportedOperationException("Not supported yet.");
+        //Task t = taskService.getTask(id);
+        //amqpNotifier.amqpTaskPublish(t, "process", "TaskTaken", id);*/
     }
 
     /**
@@ -249,10 +248,9 @@ public class TasksController {
     @RequestMapping(value = "/active", params = "candidate")
     @ResponseBody
     public Tasks getUnassignedTasksByCandidate(@RequestParam("candidate") String candidate) {
-        /*Tasks tasks = new Tasks();
+        Tasks tasks = new Tasks();
         tasks.getTasks().addAll(taskService.findGroupTasks(candidate));
-        return tasks;*/
-        throw new UnsupportedOperationException("Not supported yet.");
+        return tasks;
     }
 
     /**

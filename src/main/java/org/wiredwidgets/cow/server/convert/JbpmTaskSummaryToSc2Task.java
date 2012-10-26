@@ -26,9 +26,9 @@ import org.springframework.core.convert.converter.Converter;
 
 /**
  *
- * @author JKRANES
+ * @author FITZPATRICK
  */
-public class JbpmToSc2Task extends AbstractConverter implements Converter<org.jbpm.task.query.TaskSummary, Task> {
+public class JbpmTaskSummaryToSc2Task extends AbstractConverter implements Converter<org.jbpm.task.query.TaskSummary, Task> {
 
     // NOTE: Autowiring does not work here!
     // @Autowired

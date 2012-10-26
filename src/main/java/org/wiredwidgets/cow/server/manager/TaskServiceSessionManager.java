@@ -4,6 +4,7 @@
  */
 package org.wiredwidgets.cow.server.manager;
 
+import java.util.HashMap;
 import org.jbpm.task.service.TaskService;
 
 /**
@@ -14,4 +15,6 @@ public interface TaskServiceSessionManager {
     void init();
     TaskService getjbpmTaskService();
     void setjbpmTaskService(TaskService jbpmTaskService);
+    HashMap getuserGroups();
+    void setuserGroups(HashMap userGroups);
 }

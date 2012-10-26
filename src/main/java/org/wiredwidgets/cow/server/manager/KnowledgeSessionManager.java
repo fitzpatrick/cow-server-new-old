@@ -17,13 +17,14 @@ import org.jbpm.task.service.mina.AsyncMinaTaskClient;
  */
 public class KnowledgeSessionManager {
     StatefulKnowledgeSession kSession;
+    MinaHTWorkItemHandler minaWorkItemHandler;
     
     public void init() {
         GenericCommandBasedWSHumanTaskHandler test = new GenericCommandBasedWSHumanTaskHandler(kSession);
-        MinaHTWorkItemHandler mina = new MinaHTWorkItemHandler(kSession);
-        mina.setIpAddress("127.0.0.1");
-        mina.setPort(9123);
-        kSession.getWorkItemManager().registerWorkItemHandler("Human Task", mina);
+        minaWorkItemHandler = new MinaHTWorkItemHandler(kSession);
+        minaWorkItemHandler.setIpAddress("127.0.0.1");
+        minaWorkItemHandler.setPort(9123);
+        kSession.getWorkItemManager().registerWorkItemHandler("Human Task", minaWorkItemHandler);
     }
     
     public StatefulKnowledgeSession getkSession() {
@@ -32,5 +33,13 @@ public class KnowledgeSessionManager {
     
     public void setkSession(StatefulKnowledgeSession kSession) {
         this.kSession = kSession;
+    }
+    
+    public MinaHTWorkItemHandler getminaWorkItemHandler() {
+        return minaWorkItemHandler;
+    }
+    
+    public void setminaWorkItemHandler(MinaHTWorkItemHandler minaWorkItemHandler) {
+        this.minaWorkItemHandler = minaWorkItemHandler;
     }
 }

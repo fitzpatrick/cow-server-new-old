@@ -29,8 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.wiredwidgets.cow.server.api.service.HistoryActivities;
-import org.wiredwidgets.cow.server.api.service.ProcessInstances;
+import org.wiredwidgets.cow.server.api.service.*;
 import org.wiredwidgets.cow.server.service.ProcessInstanceService;
 import org.wiredwidgets.cow.server.service.ProcessService;
 
@@ -66,10 +65,29 @@ public class ProcessInstancesController extends CowServerController{
     @RequestMapping(value = "/active", method = RequestMethod.POST, params = "!execute")
     public void startExecution(@RequestBody org.wiredwidgets.cow.server.api.service.ProcessInstance pi, @RequestParam(value = "init-vars", required = false) boolean initVars, HttpServletResponse response, HttpServletRequest req) {
         log.debug("startExecution: " + pi.getProcessDefinitionKey());
+        
+        // option to initialize the process instance with variables / values set in the master process
+        /*if (initVars) {
+            org.wiredwidgets.cow.server.api.model.v2.Process process = processService.getV2Process(pi.getProcessDefinitionKey());
+            for (org.wiredwidgets.cow.server.api.model.v2.Variable var : process.getVariables().getVariables()) {
+                addVariable(pi, var.getName(), var.getValue());
+            }
+        }*/
+        
         String id = processInstanceService.executeProcess(pi);
         System.out.println("STARTED PROCESS ID " + id);
         response.setStatus(HttpServletResponse.SC_CREATED); // 201
         response.setHeader("Location", req.getRequestURL() + "/" + id);
+    }
+    
+    private void addVariable(ProcessInstance pi, String name, String value) {
+        if (pi.getVariables() == null) {
+            pi.setVariables(new Variables());
+        }
+        Variable v = new Variable();
+        v.setName(name);
+        v.setValue(value);
+        pi.getVariables().getVariables().add(v);
     }
     
     /**

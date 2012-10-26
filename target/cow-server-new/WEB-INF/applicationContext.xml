@@ -74,6 +74,7 @@
                 <!--<bean class="org.wiredwidgets.cow.server.convert.JbpmToSc2HistoryProcessInstance" />
                 <bean class="org.wiredwidgets.cow.server.convert.JbpmToSc2ProcessDefinition" />-->
                 <bean class="org.wiredwidgets.cow.server.convert.JbpmToSc2Task" />
+                <bean class="org.wiredwidgets.cow.server.convert.JbpmTaskSummaryToSc2Task" />
                 <!--<bean class="org.wiredwidgets.cow.server.convert.JbpmToSc2User" />
                 <bean class="org.wiredwidgets.cow.server.convert.JbpmToSc2Group" />
                 <bean class="org.wiredwidgets.cow.server.convert.Sc2ToJbpmTask" />-->
@@ -86,9 +87,9 @@
         <property name="url" value="${datasource.url}" />
         <property name="username" value="${datasource.username}"/>
         <property name="password" value="${datasource.password}" />-->
-        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <!--<property name="url" value="jdbc:h2:mem:jbpm"/>-->
-        <property name="url" value="jdbc:postgresql://localhost/jbpm5" />
+        <property name="url" value="jdbc:mysql://localhost/jbpm5" />
         <property name="username" value="jbpm5"/>
         <property name="password" value="jbpm5" />
     </bean>
@@ -102,8 +103,11 @@
     
     <bean id="jbpmTaskService" class="org.jbpm.task.service.TaskService" c:emf-ref="emf" c:systemEventListener-ref="sel"/>
     
+    <bean id="userGroups" class="java.util.HashMap" />
+    
     <bean id="taskServiceSessionManager" class="org.wiredwidgets.cow.server.manager.TaskServiceSessionManagerImpl" init-method="init" >
         <property name="jbpmTaskService" ref="jbpmTaskService" />
+        <property name="userGroups" ref="userGroups" />
     </bean>
       
     <bean id="minaTaskServer" class="org.jbpm.task.service.mina.MinaTaskServer" c:service-ref="jbpmTaskService" destroy-method="stop" />
@@ -148,8 +152,13 @@
         </jbpm:configuration>
     </jbpm:ksession>
     
+    <bean id="minaWorkItemHandler" class="org.jbpm.process.workitem.wsht.MinaHTWorkItemHandler" >
+        <constructor-arg><null/></constructor-arg>
+    </bean>
+    
     <bean id="kSessionManager" class="org.wiredwidgets.cow.server.manager.KnowledgeSessionManager" init-method="init">
         <property name="kSession" ref="kSession" />
+        <property name="minaWorkItemHandler" ref="minaWorkItemHandler" />
     </bean>
     
     <bean id="testJBPMEventListener" class="org.wiredwidgets.cow.server.listener.TestJBPMEventListener">

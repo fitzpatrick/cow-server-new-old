@@ -4,9 +4,11 @@
  */
 package org.wiredwidgets.cow.server.service;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.drools.KnowledgeBase;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.jbpm.process.workitem.wsht.MinaHTWorkItemHandler;
 import org.jbpm.task.service.TaskClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -31,6 +33,12 @@ public class AbstractCowServiceImpl {
     
     @Autowired
     protected TaskClient taskClient;
+    
+    @Autowired
+    protected HashMap userGroups;
+    
+    @Autowired
+    protected MinaHTWorkItemHandler minaWorkItemHandler;
     
     //@Autowired
     //protected org.jbpm.task.service.TaskServiceSession jbpmTaskServiceSession;

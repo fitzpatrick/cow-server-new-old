@@ -43,21 +43,21 @@ public interface TaskService {
 
     List<Task> findAllTasks();
 
-    Task getTask(String id);
+    Task getTask(Long id);
 
     HistoryTask getHistoryTask(String id);
 
-    void completeTask(String id, String assignee, String outcome, Map<String, String> variables);
+    void completeTask(Long id, String assignee, String outcome, Map<String, Object> variables);
 
     List<Task> findAllUnassignedTasks();
 
     List<Task> findGroupTasks(String user);
 
-    void takeTask(String taskId, String userId);
+    void takeTask(Long taskId, String userId);
 
-    List<Task> findAllTasksByProcessInstance(String id);
+    List<Task> findAllTasksByProcessInstance(Long id);
 
-    List<Task> findAllTasksByProcessKey(String id);
+    List<Task> findAllTasksByProcessKey(Long id);
 
     /**
      * Create an ad-hoc task, i.e. one not associated with any process
@@ -66,17 +66,17 @@ public interface TaskService {
      */
     String createAdHocTask(Task task);
 
-    void addTaskParticipatingGroup(String taskId, String groupId, String type);
+    void addTaskParticipatingGroup(Long taskId, String groupId, String type);
 
-    void addTaskParticipatingUser(String taskId, String userId, String type);
+    void addTaskParticipatingUser(Long taskId, String userId, String type);
 
-    List<Participation> getTaskParticipations(String taskId);
+    List<Participation> getTaskParticipations(Long taskId);
 
-    void removeTaskParticipatingGroup(String taskId, String groupId, String type);
+    void removeTaskParticipatingGroup(Long taskId, String groupId, String type);
 
-    void removeTaskParticipatingUser(String taskId, String userId, String type);
+    void removeTaskParticipatingUser(Long taskId, String userId, String type);
 
-    void removeTaskAssignment(String taskId);
+    void removeTaskAssignment(Long taskId);
 
     /**
      * Retrieve historical (completed) tasks by completion date range

@@ -116,14 +116,15 @@
         <property name="minaTaskServer" ref="minaTaskServer" />
     </bean>
     
-    <bean id="minaTaskClientHandler" class="org.jbpm.task.service.mina.MinaTaskClientHandler" c:systemEventListener-ref="sel"/>
+    <!--<bean id="minaTaskClientHandler" class="org.jbpm.task.service.mina.MinaTaskClientHandler" c:systemEventListener-ref="sel"/>
     
     <bean id="minaTaskClientConnector" class="org.jbpm.task.service.mina.MinaTaskClientConnector">
         <constructor-arg type="java.lang.String" value="client 1" />
         <constructor-arg ref="minaTaskClientHandler" />
-    </bean>
+    </bean>-->
     
-    <bean id="taskClient" class="org.jbpm.task.service.TaskClient" c:connector-ref="minaTaskClientConnector"/>
+    <bean id="minaTaskClient" class="org.jbpm.task.service.mina.AsyncMinaTaskClient" />
+    <bean id="taskClient" class="org.jbpm.task.service.SyncTaskServiceWrapper" c:taskService-ref="minaTaskClient" />
     
     <bean id="taskClientManager" class="org.wiredwidgets.cow.server.manager.TaskClientManager" init-method="init" >
         <property name="taskClient" ref="taskClient" />
@@ -219,5 +220,8 @@
     <bean id="processService" class="org.wiredwidgets.cow.server.service.ProcessServiceImpl" />
     <bean id="processInstanceService" class="org.wiredwidgets.cow.server.service.ProcessInstanceServiceImpl" />
     <bean id="taskService" class="org.wiredwidgets.cow.server.service.TaskServiceImpl" />
+    
+    
+    <bean id="testHumanVars" class="org.wiredwidgets.cow.server.test.TestHumanVars" />
 
 </beans>

@@ -17,21 +17,20 @@
 package org.wiredwidgets.cow.server.web;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.drools.runtime.StatefulKnowledgeSession;
-import org.jbpm.task.AsyncTaskService;
-import org.jbpm.task.query.TaskSummary;
-import org.jbpm.task.service.responsehandlers.BlockingTaskSummaryResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.wiredwidgets.cow.server.api.service.*;
 import org.wiredwidgets.cow.server.service.ProcessInstanceService;
-import org.wiredwidgets.cow.server.service.ProcessService;
 
 
 /**
@@ -43,8 +42,8 @@ import org.wiredwidgets.cow.server.service.ProcessService;
 public class ProcessInstancesController extends CowServerController{
     private static Logger log = Logger.getLogger(ProcessInstancesController.class);
     
-    @Autowired
-    ProcessService processService;
+    //@Autowired
+    //ProcessService processService;
     @Autowired
     ProcessInstanceService processInstanceService;
     @Autowired
@@ -75,6 +74,19 @@ public class ProcessInstancesController extends CowServerController{
         }*/
         
         String id = processInstanceService.executeProcess(pi);
+        
+        //Map<String, Object> params = new HashMap<String, Object>();
+        /*if (pi.getVariables() != null) {
+            for (Variable variable : pi.getVariables().getVariables()) {
+                params.put(variable.getName(), variable.getValue());
+            }
+        }*/
+        // COW-65 save history for all variables
+        // org.jbpm.api.ProcessInstance pi = executionService.startProcessInstanceByKey(instance.getProcessDefinitionKey(), vars);
+        
+        //params.put("content", new HashMap<String,Object>());
+        //org.drools.runtime.process.ProcessInstance pi2 = kSession.startProcess(pi.getProcessDefinitionKey(), params);
+        
         System.out.println("STARTED PROCESS ID " + id);
         response.setStatus(HttpServletResponse.SC_CREATED); // 201
         response.setHeader("Location", req.getRequestURL() + "/" + id);

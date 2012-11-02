@@ -32,7 +32,7 @@ public class AbstractCowServiceImpl {
     protected StatefulKnowledgeSession kSession;
     
     @Autowired
-    protected TaskClient taskClient;
+    protected org.jbpm.task.TaskService taskClient;
     
     @Autowired
     protected HashMap userGroups;

@@ -40,17 +40,19 @@ public class ProcessInstanceServiceImpl extends AbstractCowServiceImpl implement
          */
 
         Map<String, Object> vars = new HashMap<String, Object>();
-        Map<String, Object> content = new HashMap<String, Object>();
+        
+        //content.put("content", new HashMap<String,Object>());
         if (instance.getVariables() != null) {
             for (Variable variable : instance.getVariables().getVariables()) {
-                content.put(variable.getName(), variable.getValue());
+                vars.put(variable.getName(), variable.getValue());
             }
         }
         // COW-65 save history for all variables
         // org.jbpm.api.ProcessInstance pi = executionService.startProcessInstanceByKey(instance.getProcessDefinitionKey(), vars);
-        vars.put("testvar", "winning");
+        
+        
         org.drools.runtime.process.ProcessInstance pi = kSession.startProcess(instance.getProcessDefinitionKey(), vars);
-        instance.setId(pi.getProcessId());
+        instance.setId(Long.toString(pi.getId()));
         /*
          * //create the process name as a history-tracked variable if
          * (instance.getName() != null) { //

@@ -26,7 +26,6 @@ import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
 import org.omg.spec.bpmn._20100524.model.Definitions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -53,8 +52,8 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
     Bpmn20ProcessBuilder bpmn20ProcessBuilder;
     
     @Autowired
-    Jaxb2Marshaller marshaller;
-
+    RestTemplate restTemplate;
+    
     @Transactional(readOnly = true)
     @Override
     public StreamSource getResource(String id, String name) {
@@ -137,16 +136,17 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
        log.debug("built bpmn20 process");
        // d.setId(v2Process.getKey());
        // resources.put(BPMN2_EXTENSION, marshalToInputStream(d));
-       saveInRem2(v2Process, d);
+       saveInRem2(v2Process);
        return createDeployment(new StreamSource(marshalToInputStream(d)), deploymentName, true);
     }
 
     @Transactional(readOnly = true)
     @Override
     public InputStream getResourceAsStream(String key, String extension) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	return getProcessFromRem2(key).getInputStream();
     }
-
+    
+   
     @Transactional(readOnly = true)
     @Override
     public InputStream getResourceAsStreamByDeploymentId(String id, String extension) {
@@ -156,7 +156,7 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
     @Transactional(readOnly = true)
     @Override
     public Process getV2Process(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	return (Process) marshaller.unmarshal(getProcessFromRem2(key));
     }
     
     private void addProperty(Node node, String name, String value) {
@@ -166,7 +166,7 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
         node.getProperties().add(p);
     }    
     
-    private void saveInRem2(org.wiredwidgets.cow.server.api.model.v2.Process process, Definitions definitions) {
+    private void saveInRem2(org.wiredwidgets.cow.server.api.model.v2.Process process) {
         Node node = new Node();
         node.setType("rem:marketplace");
         node.setName(process.getName());
@@ -180,7 +180,7 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
         content.setType("nt:resource");
         
         StringWriter sw = new StringWriter();
-        marshaller.marshal(definitions, new StreamResult(sw));
+        marshaller.marshal(process, new StreamResult(sw));
         
         addProperty(content, "jcr:data", sw.toString()); 
         addProperty(content, "jcr:mimeType", "application/xml");
@@ -196,6 +196,11 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
         marshaller.marshal(source, new StreamResult(out));
         return new ByteArrayInputStream(out.toByteArray());
 
+    }
+    
+    private StreamSource getProcessFromRem2(String processName) {
+    	String url = REM2_URL + "/cms/workflows/" + processName;
+    	return restTemplate.getForObject(url, StreamSource.class);
     }
   
 }

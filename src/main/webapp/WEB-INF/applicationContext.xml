@@ -193,6 +193,8 @@
     <bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter" />
 
     <bean id="sourceHttpMessageConverter" class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+    
+    <bean id="rssHttpMessageConverter" class="org.springframework.http.converter.feed.RssChannelHttpMessageConverter" />
 
     <bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
         <property name="objectMapper" ref="jacksonObjectMapper" />
@@ -212,6 +214,8 @@
             <util:list>
                 <ref bean="marshallingHttpMessageConverter" />
                 <ref bean="xmlStringHttpMessageConverter" />
+                <ref bean="rssHttpMessageConverter" />
+                <ref bean="sourceHttpMessageConverter" />
             </util:list>
         </property>
     </bean>

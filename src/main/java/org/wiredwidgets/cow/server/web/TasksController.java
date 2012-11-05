@@ -42,7 +42,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.wiredwidgets.cow.server.test.TestHumanVars;
+// import org.wiredwidgets.cow.server.test.TestHumanVars;
 import org.wiredwidgets.cow.server.service.TaskService;
 import org.wiredwidgets.cow.server.service.TaskServiceImpl;
 

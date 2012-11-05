@@ -4,17 +4,16 @@
  */
 package org.wiredwidgets.cow.server.service;
 
-import java.util.*;
-import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.drools.KnowledgeBase;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.process.ProcessContext;
-import org.jbpm.process.workitem.wsht.AsyncMinaHTWorkItemHandler;
-import org.jbpm.process.workitem.wsht.MinaHTWorkItemHandler;
-import org.jbpm.process.workitem.wsht.WSHumanTaskHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.wiredwidgets.cow.server.api.model.v2.Process;
 import org.wiredwidgets.cow.server.api.service.ProcessInstance;
@@ -25,6 +24,7 @@ import org.wiredwidgets.cow.server.api.service.Variable;
  * @author FITZPATRICK
  */
 @Transactional
+@Component
 public class ProcessInstanceServiceImpl extends AbstractCowServiceImpl implements ProcessInstanceService {
 
     public static Logger log = Logger.getLogger(ProcessInstanceServiceImpl.class);

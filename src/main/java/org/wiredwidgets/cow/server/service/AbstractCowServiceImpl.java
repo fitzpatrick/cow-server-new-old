@@ -6,18 +6,20 @@ package org.wiredwidgets.cow.server.service;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.drools.KnowledgeBase;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.jbpm.process.workitem.wsht.MinaHTWorkItemHandler;
-import org.jbpm.task.service.TaskClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author FITZPATRICK
  */
+@Component
 public class AbstractCowServiceImpl {
     @Autowired
     protected KnowledgeBase kBase;

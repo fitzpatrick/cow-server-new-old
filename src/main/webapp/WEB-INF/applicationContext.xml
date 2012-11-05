@@ -167,7 +167,7 @@
     </bean>
 
     <!-- Specify packages containing JAXB generated classes for marshalling/unmarshalling -->
-    <oxm:jaxb2-marshaller id="jaxb-marshaller" contextPath="org.wiredwidgets.cow.server.api.service:org.jbpm._4_4.jpdl:org.wiredwidgets.cow.server.api.model.v2:org.omg.spec.bpmn._20100524.model" />
+    <oxm:jaxb2-marshaller id="jaxb-marshaller" contextPath="org.wiredwidgets.cow.server.api.service:org.wiredwidgets.rem2.schema:org.wiredwidgets.cow.server.api.model.v2:org.omg.spec.bpmn._20100524.model" />
 
     <!-- The Jackson library provides support for JSON as an alternative to XML 
          REST clients can request JSON by setting the Accept header to 'application/json' instead of 'application/xml' -->
@@ -216,12 +216,46 @@
         </property>
     </bean>
     
-    <!-- Custom Service classes -->
-    <bean id="processService" class="org.wiredwidgets.cow.server.service.ProcessServiceImpl" />
-    <bean id="processInstanceService" class="org.wiredwidgets.cow.server.service.ProcessInstanceServiceImpl" />
-    <bean id="taskService" class="org.wiredwidgets.cow.server.service.TaskServiceImpl" />
+    <context:component-scan base-package="org.wiredwidgets.cow.server.service, org.wiredwidgets.cow.server.transform" />
     
-    
-    <bean id="testHumanVars" class="org.wiredwidgets.cow.server.test.TestHumanVars" />
+    <bean id="activityBuilderFactoryFactory" class="org.wiredwidgets.cow.server.transform.v2.ActivityBuilderFactoryFactory">
+        <property name="factories">
+            <util:list>
+                <!-- BypassableActivityBuilder is first, as any subtype may be bypassable -->
+                <bean class="org.wiredwidgets.cow.server.transform.v2.BypassableActivityBuilderFactory" />               
+                <bean class="org.wiredwidgets.cow.server.transform.v2.GatewayDecisionActivityBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.GatewayLoopActivityBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.ParallelSetActivityBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.ComplexSetActivityBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.SequentialSetActivityBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.TaskActivityBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.ServiceTaskActivityBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.SubProcessActivityBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.ExitActivityBuilderFactory" />
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="nodeBuilderFactoryFactory" class="org.wiredwidgets.cow.server.transform.v2.NodeBuilderFactoryFactory">
+        <property name="factories">
+            <util:set>
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20UserTaskNodeBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20DecisionUserTaskNodeBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20ServiceTaskNodeBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20SubProcessNodeBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20ExitNodeBuilderFactory" />
+
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20DivergingParallelGatewayNodeBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20DivergingExclusiveGatewayNodeBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20DivergingComplexGatewayNodeBuilderFactory" />
+     
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20ConvergingParallelGatewayNodeBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20ConvergingExclusiveGatewayNodeBuilderFactory" />
+                <bean class="org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20ConvergingComplexGatewayNodeBuilderFactory" />
+            </util:set>
+        </property>
+    </bean>    
+ 
+<!--     <bean id="testHumanVars" class="org.wiredwidgets.cow.server.test.TestHumanVars" /> -->
 
 </beans>

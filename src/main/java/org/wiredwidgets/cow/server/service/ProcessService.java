@@ -21,6 +21,7 @@ import java.util.List;
 import javax.xml.transform.stream.StreamSource;
 import org.wiredwidgets.cow.server.api.service.Deployment;
 import org.wiredwidgets.cow.server.api.service.ResourceNames;
+import org.wiredwidgets.cow.server.api.model.v2.Process;
 
 /**
  *
@@ -54,7 +55,7 @@ public interface ProcessService {
 
     Deployment getDeployment(String id);
 
-    Deployment saveV2Process(org.wiredwidgets.cow.server.api.model.v2.Process v2Process, String deploymentName);
+    Deployment saveV2Process(Process v2Process, String deploymentName);
 
     InputStream getResourceAsStream(String key, String extension);
 

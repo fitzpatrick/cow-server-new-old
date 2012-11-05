@@ -59,6 +59,6 @@
         </property>
     </bean>-->
 
-    <context:component-scan base-package="org.wiredwidgets.cow.server"/>
+    <context:component-scan base-package="org.wiredwidgets.cow.server.web"/>
 
 </beans>

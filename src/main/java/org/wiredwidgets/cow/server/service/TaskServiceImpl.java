@@ -4,33 +4,31 @@
  */
 package org.wiredwidgets.cow.server.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.drools.SystemEventListenerFactory;
-import org.jbpm.task.*;
+
+import org.jbpm.task.Content;
+import org.jbpm.task.Deadline;
+import org.jbpm.task.Deadlines;
+import org.jbpm.task.I18NText;
+import org.jbpm.task.OrganizationalEntity;
+import org.jbpm.task.PeopleAssignments;
+import org.jbpm.task.TaskData;
 import org.jbpm.task.query.TaskSummary;
 import org.jbpm.task.service.ContentData;
-import org.jbpm.task.service.SyncTaskServiceWrapper;
-import org.jbpm.task.service.TaskClient;
-import org.jbpm.task.service.TaskClientHandler.GetContentResponseHandler;
-import org.jbpm.task.service.TaskClientHandler.GetTaskResponseHandler;
-import org.jbpm.task.service.TaskServiceSession;
-import org.jbpm.task.service.mina.AsyncMinaTaskClient;
-import org.jbpm.task.service.mina.MinaTaskClientConnector;
-import org.jbpm.task.service.mina.MinaTaskClientHandler;
-import org.jbpm.task.service.responsehandlers.*;
-import org.jbpm.task.utils.ContentMarshallerContext;
+import org.jbpm.task.service.responsehandlers.BlockingGetTaskResponseHandler;
 import org.jbpm.task.utils.ContentMarshallerHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.wiredwidgets.cow.server.api.model.v2.Activity;
-import org.wiredwidgets.cow.server.api.service.*;
+import org.wiredwidgets.cow.server.api.service.HistoryActivity;
+import org.wiredwidgets.cow.server.api.service.HistoryTask;
+import org.wiredwidgets.cow.server.api.service.Participation;
 import org.wiredwidgets.cow.server.api.service.Task;
 
 /**
@@ -38,6 +36,7 @@ import org.wiredwidgets.cow.server.api.service.Task;
  * @author FITZPATRICK
  */
 @Transactional
+@Component
 public class TaskServiceImpl extends AbstractCowServiceImpl implements TaskService {
 
     //private static TypeDescriptor JBPM_PARTICIPATION_LIST = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(org.jbpm.api.task.Participation.class));

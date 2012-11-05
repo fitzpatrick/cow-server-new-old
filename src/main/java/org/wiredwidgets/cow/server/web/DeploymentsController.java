@@ -6,14 +6,20 @@ package org.wiredwidgets.cow.server.web;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.stream.StreamSource;
+
 import org.apache.log4j.Logger;
-import org.drools.KnowledgeBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.wiredwidgets.cow.server.api.service.Deployment;
 import org.wiredwidgets.cow.server.api.service.Deployments;
 import org.wiredwidgets.cow.server.service.ProcessService;
+import org.wiredwidgets.cow.server.api.model.v2.Process;
 
 /**
  * Controller to handle REST calls for the /deployments resource
@@ -105,8 +111,7 @@ public class DeploymentsController {
     @RequestMapping(value = "/v2", method = RequestMethod.POST)
     @ResponseBody
     public Deployment createV2Deployment(@RequestBody Process process, @RequestParam String name) {
-        //return processService.saveV2Process(process, name);
-        throw new UnsupportedOperationException("Not supported yet.");
+        return processService.saveV2Process(process, name);
     }
     
 }

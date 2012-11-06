@@ -13,16 +13,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
 import org.omg.spec.bpmn._20100524.model.Definitions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.wiredwidgets.cow.server.api.model.v2.Process;
 import org.wiredwidgets.cow.server.api.service.Deployment;
+import org.wiredwidgets.cow.server.api.service.ProcessDefinition;
+import org.wiredwidgets.cow.server.api.service.ProcessDefinitions;
 import org.wiredwidgets.cow.server.api.service.ResourceNames;
-import org.wiredwidgets.cow.server.parse.BPMN2SaxParser;
 import org.wiredwidgets.cow.server.transform.v2.bpmn20.Bpmn20ProcessBuilder;
 import org.wiredwidgets.rem2.schema.Node;
 import org.wiredwidgets.rem2.schema.Property;
-import org.xml.sax.XMLReader;
 
 /**
  *
@@ -53,6 +51,9 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
     
     @Autowired
     RestTemplate restTemplate;
+    
+    @Autowired
+    ProcessDefinitionsService processDefsService;
     
     @Transactional(readOnly = true)
     @Override
@@ -104,24 +105,24 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
     }
 
     @Override
-    public Deployment createDeployment(StreamSource source, String name, boolean bpmn2) {
+    public Deployment createDeployment(Definitions definitions, String name) {
 
         try {
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXParser sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-
-            BPMN2SaxParser bpmnParser = new BPMN2SaxParser();
-
-            byte[] input = IOUtils.toByteArray(source.getInputStream());
-            ByteArrayInputStream ba = new ByteArrayInputStream(input);
-            sp.parse(ba, bpmnParser);
-
+//            SAXParserFactory spf = SAXParserFactory.newInstance();
+//            SAXParser sp = spf.newSAXParser();
+//            XMLReader xr = sp.getXMLReader();
+//
+//            BPMN2SaxParser bpmnParser = new BPMN2SaxParser();
+//
+//            byte[] input = IOUtils.toByteArray(source.getInputStream());
+//            ByteArrayInputStream ba = new ByteArrayInputStream(input);
+//            sp.parse(ba, bpmnParser);
+       	
             KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-            kBuilder.add(ResourceFactory.newByteArrayResource(input), ResourceType.BPMN2);
+            kBuilder.add(ResourceFactory.newInputStreamResource(marshalToInputStream(definitions)), ResourceType.BPMN2);
             kBase.addKnowledgePackages(kBuilder.getKnowledgePackages());
 
-            return bpmnParser.getDeployment();
+            return createDeployment(definitions);
         } catch (Exception e) {
             log.error(e);
         }
@@ -137,7 +138,7 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
        // d.setId(v2Process.getKey());
        // resources.put(BPMN2_EXTENSION, marshalToInputStream(d));
        saveInRem2(v2Process);
-       return createDeployment(new StreamSource(marshalToInputStream(d)), deploymentName, true);
+       return createDeployment(d, deploymentName);
     }
 
     @Transactional(readOnly = true)
@@ -157,6 +158,24 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
     @Override
     public Process getV2Process(String key) {
     	return (Process) marshaller.unmarshal(getProcessFromRem2(key));
+    }
+    
+    @Override
+	public Definitions getBpmn20Process(String key) {
+    	return bpmn20ProcessBuilder.build(getV2Process(key));
+    }
+    
+    @Override
+	public void loadAllProcesses() {
+    	List<ProcessDefinition> defs = processDefsService.findLatestVersionProcessDefinitions();
+    	for (ProcessDefinition def : defs) {
+    		log.info("Loading process: " + def.getKey());
+    		Definitions d = getBpmn20Process(def.getKey());
+            KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();	
+            Resource resource = ResourceFactory.newInputStreamResource(marshalToInputStream(d));
+            kBuilder.add(resource, ResourceType.BPMN2);
+            kBase.addKnowledgePackages(kBuilder.getKnowledgePackages());    		
+    	}
     }
     
     private void addProperty(Node node, String name, String value) {
@@ -194,7 +213,12 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
     private InputStream marshalToInputStream(Object source) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(source, new StreamResult(out));
-        return new ByteArrayInputStream(out.toByteArray());
+        
+        byte[] bytes = out.toByteArray();
+        String test = new String(bytes);
+        log.info(test);
+   
+        return new ByteArrayInputStream(bytes);
 
     }
     
@@ -202,5 +226,14 @@ public class ProcessServiceImpl extends AbstractCowServiceImpl implements Proces
     	String url = REM2_URL + "/cms/workflows/" + processName;
     	return restTemplate.getForObject(url, StreamSource.class);
     }
+    
+    private Deployment createDeployment(Definitions definitions) {
+    	Deployment d = new Deployment();
+    	d.setId(definitions.getId());
+    	d.setName(definitions.getName());
+    	d.setState("active");
+    	return d;
+    }
+   
   
 }

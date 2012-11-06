@@ -18,10 +18,13 @@ package org.wiredwidgets.cow.server.service;
 
 import java.io.InputStream;
 import java.util.List;
+
 import javax.xml.transform.stream.StreamSource;
+
+import org.omg.spec.bpmn._20100524.model.Definitions;
+import org.wiredwidgets.cow.server.api.model.v2.Process;
 import org.wiredwidgets.cow.server.api.service.Deployment;
 import org.wiredwidgets.cow.server.api.service.ResourceNames;
-import org.wiredwidgets.cow.server.api.model.v2.Process;
 
 /**
  *
@@ -35,13 +38,13 @@ public interface ProcessService {
 
     /**
      * Creates a new deployment from a StreamSource.  The StreamSource is presumed
-     * to contain a JPDL format process definition xml file.
+     * to contain a BPMN format process definition xml file.
      * @param source
      * @param name the name assigned to the deployment.  The same name, with .jpdl.xml
      * appended, will be used for the resource stored with the deployment.
      * @return
      */
-    public Deployment createDeployment(StreamSource source, String name, boolean bpmn2);
+    public Deployment createDeployment(Definitions definitions, String name);
 
     StreamSource getResource(String id, String name);
 
@@ -62,5 +65,9 @@ public interface ProcessService {
     InputStream getResourceAsStreamByDeploymentId(String id, String extension);
 
     org.wiredwidgets.cow.server.api.model.v2.Process getV2Process(String key);
+
+	public abstract void loadAllProcesses();
+
+	public abstract Definitions getBpmn20Process(String key);
     
 }

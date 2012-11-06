@@ -40,9 +40,6 @@ public class ProcessesController extends CowServerController {
 
     @Autowired
     ProcessService processService;
-
-    @Autowired
-    Bpmn20ProcessBuilder bpmn20ProcessBuilder;
     
     private static Logger log = Logger.getLogger(ProcessesController.class);
 
@@ -55,7 +52,7 @@ public class ProcessesController extends CowServerController {
     @ResponseBody
     public Definitions getNativeProcess(@PathVariable("key") String key) {
         // return new StreamSource(processService.getNativeProcessAsStream(key));
-    	return getBpmn2Process(key);
+    	return getBpmn20Process(key);
     }
 
     /**
@@ -66,8 +63,8 @@ public class ProcessesController extends CowServerController {
      */
     @RequestMapping(value = "/{key}", params = "format=bpmn20")
     @ResponseBody
-    public Definitions getBpmn2Process(@PathVariable("key") String key) {
-        return bpmn20ProcessBuilder.build(processService.getV2Process(key));
+    public Definitions getBpmn20Process(@PathVariable("key") String key) {
+    	return processService.getBpmn20Process(key);
     }    
     
     /**

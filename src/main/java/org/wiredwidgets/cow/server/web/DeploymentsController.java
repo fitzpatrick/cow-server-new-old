@@ -5,9 +5,9 @@
 package org.wiredwidgets.cow.server.web;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.omg.spec.bpmn._20100524.model.Definitions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.wiredwidgets.cow.server.api.model.v2.Process;
 import org.wiredwidgets.cow.server.api.service.Deployment;
 import org.wiredwidgets.cow.server.api.service.Deployments;
 import org.wiredwidgets.cow.server.service.ProcessService;
-import org.wiredwidgets.cow.server.api.model.v2.Process;
 
 /**
  * Controller to handle REST calls for the /deployments resource
@@ -43,8 +43,8 @@ public class DeploymentsController {
      */
     @RequestMapping(value = "/native", method = RequestMethod.POST)
     @ResponseBody
-    public Deployment createDeployment(@RequestBody StreamSource source, @RequestParam String name, @RequestParam(value = "bpmn2", required = false) boolean bpmn2) {
-        return processService.createDeployment(source, name, bpmn2);
+    public Deployment createDeployment(@RequestBody Definitions definitions, @RequestParam String name, @RequestParam(value = "bpmn2", required = false) boolean bpmn2) {
+        return processService.createDeployment(definitions, name);
     }
     
     /**
@@ -97,8 +97,7 @@ public class DeploymentsController {
     @RequestMapping(value = "/cow", method = RequestMethod.POST)
     @ResponseBody
     public Deployment createCowDeployment(@RequestBody Process process, @RequestParam String name) {
-        //return createV2Deployment(process, name);
-        throw new UnsupportedOperationException("Not supported yet.");
+        return createV2Deployment(process, name);
     }
    
     /**

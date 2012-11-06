@@ -54,7 +54,7 @@ public abstract class Bpmn20FlowNodeBuilder<T extends TFlowNode, V extends Activ
  
         if (transitionName != null) {
             // support for conditional expressions used in diverging gateways
-            String expression = "return " + getBuildProperty("decisionVar") + " = \"" + transitionName + "\";";          
+            String expression = "return " + getBuildProperty("decisionVar") + " == \"" + transitionName + "\";";          
             addTransition(target, transitionName, expression);
         }
         else {
